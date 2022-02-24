@@ -63,7 +63,7 @@ public class Board {
      * drop a token in.  Private because users will access this through the
      * "makeMove" method.
      */
-    private Board(Board prevBoard, int columnToDrop) {
+    public Board(Board prevBoard, int columnToDrop) {
         this.numRows = prevBoard.numRows;
         this.numCols = prevBoard.numCols;
         this.consecToWin = prevBoard.consecToWin;
