@@ -280,4 +280,49 @@ public class Board {
         }
         return true;
     }
+
+
+    //for checking heuristic
+    public boolean numInARow(int row, int startcol, int n) {
+        for (int x = 0; x < n - 1; x++) {
+            if (board[row][startcol + x] != board[row][startcol + x + 1])
+                return false;
+        }
+        return true;
+    }
+
+    public boolean numInAColumn(int startrow, int col, int n) {
+        for (int x = 0; x < n - 1; x++) {
+            if (board[startrow + x][col] != board[startrow + x + 1][col])
+                return false;
+        }
+        return true;
+    }
+
+    public boolean numInANorthEastDiagonal(int startrow, int startcol, int n) {
+        for (int x = 0; x < n - 1; x++) {
+            if (board[startrow + x][startcol + x] != board[startrow + x + 1][startcol + x + 1])
+                return false;
+        }
+        return true;
+    }
+
+    public boolean numInANorthWestDiagonal(int startrow, int startcol, int n) {
+        for (int x = 0; x < n - 1; x++) {
+            if (board[startrow + x][startcol - x] != board[startrow + x + 1][startcol - x - 1])
+                return false;
+        }
+        return true;
+    }
+
+    public int getCurrPosVal(int r, int c) {
+      return board[r][c];
+    }
+
+    public int getConsecNeeded() {
+      return consecToWin;
+    }
+
+
+
 }
