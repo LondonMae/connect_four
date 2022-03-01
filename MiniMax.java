@@ -2,116 +2,34 @@
 // Artificial Intelligence
 // Connect Four!
 
+//I have not given nor recieved unauthorized aid on this program
+
 import java.util.*;
 
 public class MiniMax {
+  Board board;
+  Player p = Player.MAX;
+  int rows;
+  int cols;
+  int numInARow;
+  Scanner keyboard = new Scanner(System.in);
+  int prunings = 0;
+  HashMap<Board, MiniMaxInfo> table = new HashMap<Board, MiniMaxInfo>(); //transposition table
 
-  // play against regular minimax AI
-  static void playMinimax(Board board, Player p, Scanner keyboard) {
-    HashMap<Board, MiniMaxInfo> table = new HashMap<Board, MiniMaxInfo>(); //transposition table
-    MiniMaxInfo info = minimax(board, table);
-
-    while (!isTerminal(board)) {
-      int col;
-      if (board.getPlayerToMoveNext() == p) {
-        System.out.println("it is your turn: ");
-        col = keyboard.nextInt();
-        System.out.println("board after your turn: ");
-      }
-      else {
-        col = table.get(board).a;
-        System.out.println("board after AI turn: ");
-      }
-      board = board.makeMove(col);
-      System.out.println(board.to2DString());
-    }
-    System.out.println("Game Over");
-  }
-
-    // play against regular alphabeta AI
-    static void playAlphabeta(Board board, Player p, Scanner keyboard) {
-        HashMap<Board, MiniMaxInfo> table = new HashMap<Board, MiniMaxInfo>(); //transposition table
-        MiniMaxInfo info = alphabeta(board, -999999, 999999, table);
-
-        while (!isTerminal(board)) {
-          int col;
-          if (board.getPlayerToMoveNext() == p) {
-            System.out.println("it is your turn: ");
-            col = keyboard.nextInt();
-            System.out.println("board after your turn: ");
-          }
-          else {
-            if (!table.containsKey(board)) {
-              alphabeta(board, -999999, 999999, table);
-            }
-            col = table.get(board).a;
-            System.out.println("board after AI turn: ");
-          }
-          board = board.makeMove(col);
-          System.out.println(board.to2DString());
-        }
-        System.out.println("Game Over");
-    }
-
-    // play against alphabeta AI with heuristic
-    static void playAlphabetaWithHeuristic(Board board, Player p, Scanner keyboard) {
-        HashMap<Board, MiniMaxInfo> table = new HashMap<Board, MiniMaxInfo>(); //transposition table
-
-        while (!isTerminal(board)) {
-          int col;
-          if (board.getPlayerToMoveNext() == p) {
-            System.out.println("it is your turn: ");
-            col = keyboard.nextInt();
-            System.out.println("board after your turn: ");
-          }
-          else {
-            col = alphabetaWithHeuristic(board, -99999, 99999, new HashMap<Board, MiniMaxInfo>(), 3).a;
-            System.out.println("board after AI turn: ");
-          }
-          board = board.makeMove(col);
-          System.out.println(board.to2DString());
-        }
-        System.out.println("Game Over");
-    }
-
-  // driver function
-  public static void main(String args[]) {
-    Scanner s = new Scanner(System.in);
-    System.out.print("Run Part A, B, or C? ");
-    String alg = s.nextLine();
-    System.out.print("Include debugging info? (y/n) ");
-    String debug = s.nextLine();
-    System.out.print("Enter rows: ");
-    int r = s.nextInt();
-    System.out.print("Enter columns: ");
-    int c = s.nextInt();
-    System.out.print("Enter number in a row to win: ");
-    int n = s.nextInt();
-    System.out.print("Who plays first? 1=human, 2=computer: ");
-    int first = s.nextInt();
-    Board board = new Board(r, c, n); // standard connect 4 size
-
-    Player p = Player.MAX;
+  // constructor
+  public MiniMax(int r, int c, int n, int first, Scanner s) {
+    rows = r;
+    cols = c;
+    numInARow = n;
+    keyboard = s;
+    board = new Board(r,c,n);
     if (first == 2)
       p = Player.MIN;
-
-    if (alg.equals("A"))
-      playMinimax(board, p, s);
-    if (alg.equals("B"))
-      playAlphabeta(board, p, s);
-    if (alg.equals("C"))
-      playAlphabetaWithHeuristic(board, p, s);
-    System.out.print("Play again? (y/n)");
-    String again = s.nextLine();
-    if (again.equals("n")) {
-      play = false;
-    }
-    s.close();
   }
 
   // is-terminal: short function determines if
   // there are any possible plays left
-  private static boolean isTerminal(Board b) {
+  private boolean isTerminal(Board b) {
     // anything other than in-progress is terminal
     if (b.getGameState() == GameState.IN_PROGRESS)
       return false;
@@ -133,7 +51,7 @@ public class MiniMax {
     int v = b.getPlayerToMoveNext().getNumber();
     int points = 0;
 
-    for (int i = 2; i < b.getConsecNeeded() - 1; i++) {
+    for (int i = 2; i < b.getConsecNeeded(); i++) {
       for (int r = 0; r < b.getRows(); r++) {
           for (int c = 0; c < b.getCols(); c++) {
               if (b.getCurrPosVal(r,c) == 0) {
@@ -144,16 +62,12 @@ public class MiniMax {
                       || (r <= b.getRows() - i && b.numInAColumn(r, c, i))
                       || (r <= b.getRows() - i && c <= b.getCols() - i && b.numInANorthEastDiagonal(r, c, i))
                       || (r <= b.getRows() - i && c - i >= -1 && b.numInANorthWestDiagonal(r, c, i))) {
-                  if (b.getCurrPosVal(r,c) == v) {
-                      points += (100/i);
-                  } else {
-                      points -= (100/i);
-                  }
+                  if (b.getCurrPosVal(r,c) == -1) points -= (5*i);
+                  else if (b.getCurrPosVal(r,c) == 1) points += (5*i);
               }
           }
       }
     }
-
     return points;
   }
 
@@ -172,7 +86,7 @@ public class MiniMax {
    * returns Minimax info (recursive function)
    * runs entire minimax algorithm on given state without pruning
   */
-  static MiniMaxInfo minimax(Board state, HashMap<Board,MiniMaxInfo> table) {
+  private MiniMaxInfo minimax(Board state, HashMap<Board,MiniMaxInfo> table) {
     int util; // utility value of given state
     MiniMaxInfo info = new MiniMaxInfo(0, -1); // defualt tie and terminal state
     List<Integer> actions = legalMoves(state);
@@ -228,7 +142,7 @@ public class MiniMax {
   }
 
   // max function returns max of 2 numbers
-  static private int max(int a, int b) {
+  private int max(int a, int b) {
     if (a > b)
       return a;
     else
@@ -236,7 +150,7 @@ public class MiniMax {
   }
 
   // min function returns min of 2 numbers
-  static private int min(int a, int b) {
+  private int min(int a, int b) {
     if (a < b)
       return a;
     else
@@ -244,7 +158,7 @@ public class MiniMax {
   }
 
   // same as minimax function, but with alphabeta pruning
-  static MiniMaxInfo alphabeta(Board state, int alpha, int beta, HashMap<Board,MiniMaxInfo> table) {
+  private MiniMaxInfo alphabeta(Board state, int alpha, int beta, HashMap<Board,MiniMaxInfo> table) {
     int util;
     MiniMaxInfo info = new MiniMaxInfo(0, -1);
     List<Integer> actions = legalMoves(state);
@@ -273,6 +187,7 @@ public class MiniMax {
         // of another node, then we know MIN will not choose this
         // action, so we can prune the rest of the tree
         if (info.v >= beta) {
+          prunings+=1;
           return info;
         }
       }
@@ -295,6 +210,7 @@ public class MiniMax {
         // of another child node, then we know MAX will not choose this
         // action, so we can prune the rest of the tree
         if(info.v <= alpha) {
+          prunings+=1;
           return info;
         }
       }
@@ -306,7 +222,7 @@ public class MiniMax {
   // same as alpha beta, but add cutoff that
   // acts as terminal state, but instead of
   // computing util, we evalute with a heuristic
-  static MiniMaxInfo alphabetaWithHeuristic(Board state, int alpha, int beta, HashMap<Board,MiniMaxInfo> table, int depth) {
+  private MiniMaxInfo alphabetaWithHeuristic(Board state, int alpha, int beta, HashMap<Board,MiniMaxInfo> table, int depth) {
     int util;
     MiniMaxInfo info = new MiniMaxInfo(0, -1);
     List<Integer> actions = legalMoves(state);
@@ -371,5 +287,123 @@ public class MiniMax {
       return info;
     }
   }
+
+  // play against regular minimax AI
+  public void playMinimax() {
+    table = new HashMap<Board, MiniMaxInfo>(); //transposition table
+    board = new Board(rows,cols,numInARow);
+    MiniMaxInfo info = minimax(board, table);
+    System.out.println("transposition table has " + table.size() + " states.");
+    if (info.v == 0) System.out.println("Neither player is guarunteed a win; game will end in tie with perfect play on both sides");
+    else if (info.v > 0) System.out.println("First player guarunteed a win with perfect play.");
+    else System.out.println("Second player is guarunteed a win with perfect play.");
+    System.out.println("guarunteed outcome is " + info.v);
+    System.out.println(board.to2DString());
+    System.out.println("MiniMax value for this state: " + info.v + ", optimal move: " + info.a);
+    System.out.println("It's MAX\'s turn!");
+    while (!isTerminal(board)) {
+      int col;
+      if (board.getPlayerToMoveNext() == p) {
+        System.out.print("Enter move: ");
+        col = keyboard.nextInt();
+        System.out.println();
+      }
+      else {
+        col = table.get(board).a;
+        System.out.println("Computer chooses move: " + col + "\n");
+      }
+      board = board.makeMove(col);
+      if (!isTerminal(board)) {
+        System.out.println(board.to2DString());
+        System.out.println("MiniMax value for this state: " + table.get(board).v + ", optimal move: " + table.get(board).a);
+        System.out.println("It's " + board.getPlayerToMoveNext().toString() + "'s turn! \n");
+      }
+    }
+    System.out.println("Game Over!");
+    System.out.println(board.to2DString());
+    if (board.getGameState() == GameState.TIE)
+      System.out.println("The result is a tie!");
+    else
+      System.out.println("This winner is " + board.getWinner().toString());
+  }
+
+    // play against regular alphabeta AI
+    public void playAlphabeta() {
+      prunings = 0;
+      table = new HashMap<Board, MiniMaxInfo>(); //transposition table
+      MiniMaxInfo info = alphabeta(board, -999999, 999999, table);
+      board = new Board(rows,cols,numInARow);
+      System.out.println("transposition table has " + table.size() + " states and was pruned " + prunings + " times.");
+      if (info.v == 0) System.out.println("Neither player is guarunteed a win; game will end in tie with perfect play on both sides");
+      else if (info.v > 0) System.out.println("First player guarunteed a win with perfect play.");
+      else System.out.println("Second player is guarunteed a win with perfect play.");
+      System.out.println("guarunteed outcome is " + info.v);
+      System.out.println(board.to2DString());
+      System.out.println("MiniMax value for this state: " + info.v + ", optimal move: " + info.a);
+      System.out.println("It's MAX\'s turn!");
+      while (!isTerminal(board)) {
+        int col;
+        if (board.getPlayerToMoveNext() == p) {
+          System.out.print("Enter move: ");
+          col = keyboard.nextInt();
+          System.out.println();
+        }
+        else {
+          if (!table.containsKey(board)) {
+            alphabeta(board, -999999, 999999, table);
+          }
+          col = table.get(board).a;
+          System.out.println("Computer chooses move: " + col + "\n");
+        }
+        board = board.makeMove(col);
+        if (!isTerminal(board)) {
+          if (!table.containsKey(board)) {
+            alphabeta(board, -999999, 999999, table);
+          }
+          System.out.println(board.to2DString());
+          System.out.println("MiniMax value for this state: " + table.get(board).v + ", optimal move: " + table.get(board).a);
+          System.out.println("It's " + board.getPlayerToMoveNext().toString() + "'s turn! \n");
+        }
+      }
+      System.out.println("Game Over!");
+      System.out.println(board.to2DString());
+      if (board.getGameState() == GameState.TIE)
+        System.out.println("The result is a tie!");
+      else
+        System.out.println("This winner is " + board.getWinner().toString());
+    }
+
+    // play against alphabeta AI with heuristic
+    public void playAlphabetaWithHeuristic() {
+      table = new HashMap<Board, MiniMaxInfo>(); //transposition table
+      board = new Board(rows,cols,numInARow);
+      MiniMaxInfo info;
+      while (!isTerminal(board)) {
+        int col;
+        info = alphabetaWithHeuristic(board, -99999, 99999, table, 6);
+        if (!isTerminal(board)) {
+          System.out.println(board.to2DString());
+          System.out.println("transposition table has " + table.size() + " states");
+          System.out.println("Heuristic value for this state: " + info.v + ", optimal move: " + info.a);
+          System.out.println("It's " + board.getPlayerToMoveNext().toString() + "'s turn! \n");
+        }
+        if (board.getPlayerToMoveNext() == p) {
+          System.out.print("Enter move: ");
+          col = keyboard.nextInt();
+          System.out.println();
+        }
+        else {
+          col = info.a;
+          System.out.println("Computer chooses move: " + col + "\n");
+        }
+        board = board.makeMove(col);
+      }
+      System.out.println("Game Over!");
+      System.out.println(board.to2DString());
+      if (board.getGameState() == GameState.TIE)
+        System.out.println("The result is a tie!");
+      else
+        System.out.println("This winner is " + board.getWinner().toString());
+    }
 
 }

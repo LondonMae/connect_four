@@ -20,4 +20,10 @@ public enum Player {
     public int getNumber() {
         return number;
     }
+
+    public String toString() {
+      if (this == MAX)
+        return "MAX";
+      return "MIN";
+    }
 }

@@ -1,0 +1,10 @@
+What bugs and conceptual difficulties did you encounter? How did you overcome them? What did you learn?
+  - This project definitely helped with my understanding of alphabeta. I had problems at first because I was adding info to the transposition table on branches that were getting pruned, which gave me a different node count. I found the problem quickly, so it was an easy fix. I would say the most difficult aspect of this project is managing the large amount of code and trying to organize/manage the structure, especially since I was trying to follow an object oriented design.
+Describe whatever help (if any) that you received. Don’t include readings, lectures, and exercises, but do include any help from other sources, such as websites or people (including classmates and friends) and attribute them by name.
+  - stack overflow! Especially since I had some issues with using the nextint function with the scanner class. My scanner prompt in my while loop wasn't consuming any input, and I learned from stackoverflow that nextint does not consume the \n, so when using nextLine it assumed that \n from my previous prompts were the input.
+Describe any serious problems you encountered while writing the program.
+  - generally trying to improve my heuristics
+Explain your heuristic that you invented for Part C.
+  - I weighted more for more pieces in a row and subtracted for the more that the opposing player has in a row. I also accounted for white space compared to x in a row, but being blocked. From the point of writing this, I may try and work on ordering the branches for my alphabeta algorithm.
+List any other feedback you have. Feel free to provide any feedback on how much you learned from doing the assignment, and whether you enjoyed doing it.
+  - this was really fun! I had my non computer science friends play against my bot and they were annoyed that they couldn't beat it, which was fun for me to witness considering that I coded it!

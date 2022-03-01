@@ -319,6 +319,19 @@ public class Board {
       return board[r][c];
     }
 
+    public int surroundingSpaces(int r, int c) {
+      int spaces = 0;
+      if (r-1 > 0 && board[r-1][c] == 0)
+        spaces += 1;
+      if (r+1 < numRows && board[r+1][c] == 0)
+        spaces += 1;
+      if (c-1 > 0 && board[r][c-1] == 0)
+        spaces += 1;
+      if (c+1 < numCols && board[r][c+1] == 0)
+        spaces += 1;
+      return spaces;
+    }
+
     public int getConsecNeeded() {
       return consecToWin;
     }
