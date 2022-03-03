@@ -3,8 +3,8 @@ What bugs and conceptual difficulties did you encounter? How did you overcome th
 Describe whatever help (if any) that you received. Don’t include readings, lectures, and exercises, but do include any help from other sources, such as websites or people (including classmates and friends) and attribute them by name.
   - stack overflow! Especially since I had some issues with using the nextint function with the scanner class. My scanner prompt in my while loop wasn't consuming any input, and I learned from stackoverflow that nextint does not consume the \n, so when using nextLine it assumed that \n from my previous prompts were the input.
 Describe any serious problems you encountered while writing the program.
-  - generally trying to improve my heuristics
+  - generally trying to improve my heuristics. I second-guessed myself a lot and ended up removing my heuristic "improvements" because I was worried that they didn't work properly.
 Explain your heuristic that you invented for Part C.
-  - I weighted more for more pieces in a row and subtracted for the more that the opposing player has in a row. I also accounted for white space compared to x in a row, but being blocked. From the point of writing this, I may try and work on ordering the branches for my alphabeta algorithm.
+  - I weighted more for more pieces in a row and subtracted for the more that the opposing player has in a row. From the point of writing this, I may try and work on ordering the branches for my alphabeta algorithm, and also making sure that peices in a row have white space to make a full row.
 List any other feedback you have. Feel free to provide any feedback on how much you learned from doing the assignment, and whether you enjoyed doing it.
   - this was really fun! I had my non computer science friends play against my bot and they were annoyed that they couldn't beat it, which was fun for me to witness considering that I coded it!
