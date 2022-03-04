@@ -444,6 +444,7 @@ public class MiniMax {
 
     // play against alphabeta AI with heuristic
     public void playAlphabetaWithHeuristic() {
+      System.out.print("Number of moves to look ahead (depth): ");
       int depth = keyboard.nextInt(); // get depth from user
       prunings = 0; // store prunings for printing
       table = new HashMap<Board, MiniMaxInfo>(); //transposition table

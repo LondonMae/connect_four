@@ -11,7 +11,7 @@ public class ConnectFour {
     Scanner s = new Scanner(System.in);
     //which algorithm
     System.out.print("Run Part A, B, or C? ");
-    String alg = s.nextLine();
+    String alg = s.nextLine().toUpperCase();
     // for debugging
     System.out.print("Include debugging info? (y/n) ");
     String debug = s.nextLine();
@@ -45,7 +45,7 @@ public class ConnectFour {
       // allows player to replay/close game
       System.out.print("do you want to continue playing? (y/n) ");
       s.nextLine();
-      String play = s.nextLine();
+      String play = s.nextLine().toLowerCase();
       if (!play.equals("y"))
         break;
     }
